@@ -2,6 +2,7 @@ import time
 
 import runpod
 import requests
+import os
 from requests.adapters import HTTPAdapter, Retry
 
 LOCAL_URL = "http://127.0.0.1:3000/sdapi/v1"
@@ -30,13 +31,56 @@ def wait_for_service(url):
         time.sleep(0.2)
 
 
-def run_inference(inference_request):
-    '''
-    Run inference on a request.
-    '''
-    response = automatic_session.post(url=f'{LOCAL_URL}/txt2img',
-                                      json=inference_request, timeout=600)
-    return response.json()
+def download_lora(lora_download_link, destination_folder):
+    """
+    Download the LoRA file from the provided link and save it to the destination folder.
+    """
+    try:
+        # Get the filename from the download link
+        filename = lora_download_link.split('/')[-1]
+        destination_path = os.path.join(destination_folder, filename)
+
+        # Ensure the destination folder exists
+        os.makedirs(destination_folder, exist_ok=True)
+
+        # Download the file
+        response = requests.get(lora_download_link, stream=True)
+        response.raise_for_status()  # Raise an error for HTTP issues
+
+        # Save the file
+        with open(destination_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+
+        print(f"LoRA file downloaded and saved to: {destination_path}")
+        return destination_path
+
+    except Exception as e:
+        print(f"Error downloading LoRA: {e}")
+        raise
+
+def run_inference(inference_request, lora_download_link):
+    """
+    Download the LoRA file, place it in the specified path, and run the inference session.
+    """
+    try:
+        # Define the destination folder for LoRA files
+        destination_folder = '/stable-diffusion-webui/models/Lora'
+
+        # Download the LoRA file
+        lora_path = download_lora(lora_download_link, destination_folder)
+
+        # Run the inference session
+        response = automatic_session.post(url=f'{LOCAL_URL}/txt2img',
+                                          json=inference_request, timeout=600)
+
+        print("Inference completed.")
+        return response.json()
+
+    except Exception as e:
+        print(f"Error during inference: {e}")
+        raise
 
 
 # ---------------------------------------------------------------------------- #
