@@ -31,14 +31,12 @@ def wait_for_service(url):
         time.sleep(0.2)
 
 
-def download_lora(lora_download_link, destination_folder):
+def download_lora(lora_download_link, lora_name, destination_folder):
     """
-    Download the LoRA file from the provided link and save it to the destination folder.
+    Download the LoRA file from the provided link and save it to the destination folder with the specified name.
     """
     try:
-        # Get the filename from the download link
-        filename = lora_download_link.split('/')[-1]
-        destination_path = os.path.join(destination_folder, filename)
+        destination_path = os.path.join(destination_folder, lora_name)
 
         # Ensure the destination folder exists
         os.makedirs(destination_folder, exist_ok=True)
@@ -60,17 +58,11 @@ def download_lora(lora_download_link, destination_folder):
         print(f"Error downloading LoRA: {e}")
         raise
 
-def run_inference(inference_request, lora_download_link):
+def run_inference(inference_request):
     """
-    Download the LoRA file, place it in the specified path, and run the inference session.
+    Run the inference session.
     """
     try:
-        # Define the destination folder for LoRA files
-        destination_folder = '/stable-diffusion-webui/models/Lora'
-
-        # Download the LoRA file
-        lora_path = download_lora(lora_download_link, destination_folder)
-
         # Run the inference session
         response = automatic_session.post(url=f'{LOCAL_URL}/txt2img',
                                           json=inference_request, timeout=600)
@@ -90,6 +82,16 @@ def handler(event):
     '''
     This is the handler function that will be called by the serverless.
     '''
+
+    input_data = event["input"]
+    lora_link = input_data["lora_link"]
+    lora_name = input_data["lora_name"]
+
+    # Define the destination folder for LoRA files
+    destination_folder = '/stable-diffusion-webui/models/Lora'
+
+    # Download the LoRA file
+    download_lora(lora_link, lora_name, destination_folder)
 
     json = run_inference(event["input"])
 
