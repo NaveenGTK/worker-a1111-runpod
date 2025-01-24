@@ -68,6 +68,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade -r /requirements.txt --no-cache-dir && \
     rm /requirements.txt
 
+RUN pip install --pre -U xformers
+
 ADD src .
 
 COPY builder/cache.py /stable-diffusion-webui/cache.py
