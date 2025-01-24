@@ -68,6 +68,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade -r /requirements.txt --no-cache-dir && \
     rm /requirements.txt
 
+RUN wget -O /stable-diffusion-webui/models/VAE-approx/vaeapprox-sdxl.pt https://huggingface.co/Gluttony10/SD/resolve/main/stable-diffusion-webui/models/VAE-approx/vaeapprox-sdxl.pt
+
+RUN wget -O /stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth https://huggingface.co/Gluttony10/SD/resolve/main/stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth
+
 ADD src .
 
 COPY builder/cache.py /stable-diffusion-webui/cache.py
