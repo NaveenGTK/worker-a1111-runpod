@@ -70,7 +70,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 RUN wget -O /stable-diffusion-webui/models/VAE-approx/vaeapprox-sdxl.pt https://huggingface.co/Gluttony10/SD/resolve/main/stable-diffusion-webui/models/VAE-approx/vaeapprox-sdxl.pt
 
-RUN wget -O /stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth https://huggingface.co/Gluttony10/SD/resolve/main/stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth
+RUN mkdir -p /stable-diffusion-webui/models/BLIP && \
+    wget -O /stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth https://huggingface.co/Gluttony10/SD/resolve/main/stable-diffusion-webui/models/BLIP/model_base_caption_capfilt_large.pth
 
 ADD src .
 
