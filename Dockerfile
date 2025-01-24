@@ -68,8 +68,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade -r /requirements.txt --no-cache-dir && \
     rm /requirements.txt
 
-RUN pip install -v -U git+https://github.com/facebookresearch/xformers.git@main#egg=xformers
-
 ADD src .
 
 COPY builder/cache.py /stable-diffusion-webui/cache.py
